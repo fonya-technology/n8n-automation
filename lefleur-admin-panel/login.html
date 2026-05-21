@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+
+    <title>Le Fleur Boutique Login</title>
+
+    <link rel="stylesheet" href="/lefleur-admin-panel/style.css" />
+  </head>
+
+  <body>
+    <div class="login-container">
+      <div class="login-card">
+        <img
+          src="/lefleur-admin-panel/assets/le-fleur-logo.png"
+          class="login-logo"
+          alt="Le Fleur Boutique"
+        />
+
+        <p class="login-subtitle">Product Catalog Administration</p>
+
+        <form id="loginForm" class="login-form">
+          <div class="password-wrapper">
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter admin password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="login-btn" id="loginButton">
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="powered-by login-powered">
+      <span>Powered by</span>
+
+      <img
+        src="/lefleur-admin-panel/assets/fonya-logo.png"
+        class="powered-logo"
+        alt="Fonya Technology"
+      />
+    </div>
+    <script>
+      const loginForm = document.getElementById("loginForm");
+
+      const loginButton = document.getElementById("loginButton");
+
+      const passwordInput = document.getElementById("password");
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const password = document.getElementById("password").value;
+
+        loginButton.disabled = true;
+
+        loginButton.textContent = "Logging in...";
+
+        try {
+          const response = await fetch(
+            "https://n8n-Yu.onrender.com/webhook/admin-login",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type": "application/json",
+              },
+
+              body: JSON.stringify({
+                password,
+              }),
+            },
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            localStorage.setItem("admin_token", result.token);
+
+            window.location.href = "index.html";
+          } else {
+            alert(result.message || "Invalid credentials");
+
+            loginButton.disabled = false;
+
+            loginButton.textContent = "Login";
+          }
+        } catch (error) {
+          console.error(error);
+
+          alert("Login failed");
+
+          loginButton.disabled = false;
+
+          loginButton.textContent = "Login";
+        }
+      });
+    </script>
+  </body>
+</html>

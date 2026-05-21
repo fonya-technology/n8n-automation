@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Product Gallery</title>
+
+    <link rel="stylesheet" href="/lefleur-admin-panel/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="gallery-header">
+        <img
+          src="/lefleur-admin-panel/assets/le-fleur-logo.png"
+          class="logo"
+          alt="Le Fleur Boutique"
+        />
+
+        <h2>Product Gallery Manager</h2>
+      </header>
+
+      <div class="gallery-topbar">
+        <input type="file" id="galleryImageInput" accept="image/*" hidden />
+        <button id="backToProducts" class="gallery-back-btn">← Back</button>
+
+        <select id="galleryProductSelect">
+          <option value="">Select Product</option>
+        </select>
+
+        <button id="uploadGalleryImageBtn" class="gallery-upload-btn">
+          + Upload Image
+        </button>
+      </div>
+
+      <div id="galleryGrid" class="gallery-grid">
+        <div class="gallery-empty">Select a product to view gallery</div>
+      </div>
+    </div>
+
+    <script src="/lefleur-admin-panel/gallery.js"></script>
+  </body>
+</html>
