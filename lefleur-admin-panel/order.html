@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Le Fleur — Place Your Order</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rose:       #c9636a;
+      --rose-light: #f5e8e8;
+      --rose-dark:  #a04248;
+      --cream:      #fdf8f4;
+      --bark:       #3b2a2a;
+      --muted:      #9a8080;
+      --border:     #e8d8d8;
+      --success:    #4caf7d;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--bark);
+    }
+
+    /* ── Petal background ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 90% 10%, #f5d0d088 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 5% 90%,  #f5d0d055 0%, transparent 55%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page-wrap {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 48px 16px 64px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .logo-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px; font-style: italic; letter-spacing: 4px;
+      color: var(--rose); text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 6vw, 2.8rem);
+      font-weight: 300; line-height: 1.1;
+      color: var(--bark);
+    }
+    header p {
+      margin-top: 10px;
+      font-size: 13px; color: var(--muted); font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      width: 100%; max-width: 520px;
+      box-shadow: 0 8px 40px rgba(59,42,42,0.07);
+    }
+
+    /* ── Product badge ── */
+    .product-badge {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--rose-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 28px;
+    }
+    .badge-icon {
+      font-size: 24px; line-height: 1;
+    }
+    .badge-label {
+      font-size: 11px; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .badge-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px; font-weight: 400; color: var(--bark);
+    }
+
+    /* ── Form ── */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 11px; font-weight: 500; letter-spacing: 1.2px;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 7px;
+    }
+    label span.req { color: var(--rose); margin-left: 2px; }
+
+    input[type="text"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; color: var(--bark);
+      background: #fff;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px rgba(201,99,106,0.12);
+    }
+    input::placeholder { color: #c9b8b8; }
+    input[readonly] {
+      background: var(--rose-light);
+      color: var(--muted); cursor: default;
+    }
+
+    /* address wrapper with pin icon */
+    .address-wrap { position: relative; }
+    .address-wrap input { padding-left: 42px; }
+    .pin-icon {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--rose); font-size: 16px; pointer-events: none;
+    }
+
+    /* hidden lat/lng hint */
+    .coords-hint {
+      margin-top: 6px;
+      font-size: 11px; color: var(--success);
+      display: none; align-items: center; gap: 4px;
+    }
+    .coords-hint.visible { display: flex; }
+
+    /* divider */
+    .divider {
+      border: none; border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* pickup info */
+    .pickup-info {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: #fdf3f3;
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px;
+      margin-bottom: 24px;
+      font-size: 13px; color: var(--muted);
+    }
+    .pickup-info .pi-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .pickup-info strong { color: var(--bark); display: block; font-size: 12px; letter-spacing: .5px; }
+
+    /* submit btn */
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: var(--rose);
+      color: #fff;
+      border: none; border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 500; letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background .2s, transform .1s, box-shadow .2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover  { background: var(--rose-dark); box-shadow: 0 4px 16px rgba(160,66,72,.25); }
+    .btn-submit:active { transform: scale(.98); }
+    .btn-submit:disabled { background: #d9bebe; cursor: not-allowed; box-shadow: none; }
+
+    /* spinner */
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-text { opacity: .7; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      display: none;
+      flex-direction: column; align-items: center;
+      text-align: center; padding: 20px 0 8px;
+    }
+    .success-overlay.visible { display: flex; }
+    .success-icon {
+      width: 64px; height: 64px;
+      background: #edfbf3; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; margin-bottom: 16px;
+      animation: popIn .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .success-overlay h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 300; color: var(--bark);
+      margin-bottom: 8px;
+    }
+    .success-overlay p {
+      font-size: 13px; color: var(--muted); line-height: 1.6;
+      max-width: 300px;
+    }
+
+    /* error msg */
+    .err-msg {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #fff0f0; border: 1px solid #f5c0c0;
+      border-radius: 8px; font-size: 13px; color: #a04248;
+    }
+    .err-msg.visible { display: block; }
+
+    /* footer */
+    footer {
+      margin-top: 28px;
+      font-size: 11px; color: var(--muted);
+      text-align: center; letter-spacing: .5px;
+    }
+
+    /* pac-container tweak */
+    .pac-container {
+      border-radius: 10px !important;
+      border: 1.5px solid var(--border) !important;
+      box-shadow: 0 8px 24px rgba(59,42,42,.1) !important;
+      font-family: 'DM Sans', sans-serif !important;
+      margin-top: 4px;
+    }
+    .pac-item { padding: 8px 14px !important; font-size: 13px !important; }
+    .pac-item:hover { background: var(--rose-light) !important; }
+
+    @media (max-width: 480px) {
+      .card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <header>
+    <div class="logo-mark">Le Fleur</div>
+    <h1>Delivery Order</h1>
+    <p>Fill in your details and we'll get your blooms on the way 🌸</p>
+  </header>
+
+  <div class="card">
+
+    <!-- Success state (hidden by default) -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-icon">🌹</div>
+      <h2>Order Received!</h2>
+      <p>We're preparing your delivery quote. Check your Messenger for the fee breakdown shortly.</p>
+    </div>
+
+    <!-- Form (shown by default) -->
+    <div id="formBody">
+
+      <!-- Product badge -->
+      <div class="product-badge">
+        <div class="badge-icon">💐</div>
+        <div>
+          <div class="badge-label">Selected Product</div>
+          <div class="badge-name" id="productDisplay">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Pickup origin -->
+      <div class="pickup-info">
+        <span class="pi-icon">📍</span>
+        <div>
+          <strong>Pickup Origin</strong>
+          Bridgestone, Col. Bonny Serrano Ave., San Juan City
+        </div>
+      </div>
+
+      <!-- Delivery Address -->
+      <div class="form-group">
+        <label>Delivery Address <span class="req">*</span></label>
+        <div class="address-wrap">
+          <span class="pin-icon">📌</span>
+          <input
+            type="text"
+            id="addressInput"
+            placeholder="Start typing your address…"
+            autocomplete="off"
+          />
+        </div>
+        <div class="coords-hint" id="coordsHint">
+          <span>✅</span> Location confirmed
+        </div>
+      </div>
+
+      <!-- Landmark -->
+      <div class="form-group">
+        <label>Landmark / Unit No. <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
+        <input type="text" id="landmarkInput" placeholder="e.g. Near Jollibee, Unit 3B"/>
+      </div>
+
+      <!-- Contact Number -->
+      <div class="form-group">
+        <label>Contact Number <span class="req">*</span></label>
+        <input type="tel" id="contactInput" placeholder="09XX XXX XXXX" maxlength="13"/>
+      </div>
+
+      <hr class="divider"/>
+
+      <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
+        <span class="btn-text">Get Delivery Quote</span>
+        <div class="spinner"></div>
+      </button>
+
+      <div class="err-msg" id="errMsg">⚠️ Please fill in all required fields and select a valid address from the suggestions.</div>
+
+    </div><!-- /formBody -->
+  </div><!-- /card -->
+
+  <footer>Powered by Le Fleur &nbsp;·&nbsp; Secure Order Form</footer>
+
+</div><!-- /page-wrap -->
+
+<script>
+  // ── Config ──────────────────────────────────────────────
+  const WEBHOOK_URL = 'https://n8n-Yu.onrender.com/webhook-test/5eaa390c-6e28-477c-a361-ce5f76175910';
+
+  // ── Read URL params ──────────────────────────────────────
+  const params      = new URLSearchParams(window.location.search);
+  const customerId  = params.get('customer_id')  || '';
+  const productCode = params.get('product_code') || '';
+  const productName = params.get('product_name') || 'Your selected product';
+
+  document.getElementById('productDisplay').textContent = productName;
+
+  // ── Lat/Lng storage ──────────────────────────────────────
+  let selectedLat = null;
+  let selectedLng = null;
+  let selectedAddress = '';
+
+  // ── Google Maps Autocomplete init ───────────────────────
+  function initAutocomplete() {
+    const input = document.getElementById('addressInput');
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      componentRestrictions: { country: 'ph' },
+      fields: ['formatted_address', 'geometry']
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) {
+        selectedLat = null; selectedLng = null; selectedAddress = '';
+        document.getElementById('coordsHint').classList.remove('visible');
+        return;
+      }
+      selectedLat     = place.geometry.location.lat();
+      selectedLng     = place.geometry.location.lng();
+      selectedAddress = place.formatted_address;
+      document.getElementById('coordsHint').classList.add('visible');
+    });
+
+    // Reset coords if user manually edits after selecting
+    input.addEventListener('input', () => {
+      selectedLat = null; selectedLng = null;
+      document.getElementById('coordsHint').classList.remove('visible');
+    });
+  }
+
+  // ── Submit handler ───────────────────────────────────────
+  async function handleSubmit() {
+    const contact  = document.getElementById('contactInput').value.trim();
+    const landmark = document.getElementById('landmarkInput').value.trim();
+    const errMsg   = document.getElementById('errMsg');
+    const btn      = document.getElementById('submitBtn');
+
+    // Validation
+    if (!selectedLat || !selectedLng || !contact) {
+      errMsg.classList.add('visible');
+      return;
+    }
+    errMsg.classList.remove('visible');
+
+    // Loading state
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    const payload = {
+      customer_id:      customerId,
+      product_code:     productCode,
+      product_name:     productName,
+      delivery_address: selectedAddress,
+      landmark:         landmark,
+      contact_number:   contact,
+      lat:              selectedLat,
+      lng:              selectedLng,
+      order_status:     'pending_quote',
+      timestamp:        new Date().toISOString()
+    };
+
+    try {
+      await fetch(WEBHOOK_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload)
+      });
+
+      // Show success
+      document.getElementById('formBody').style.display = 'none';
+      document.getElementById('successOverlay').classList.add('visible');
+
+    } catch (err) {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+      errMsg.textContent = '⚠️ Something went wrong. Please try again.';
+      errMsg.classList.add('visible');
+    }
+  }
+</script>
+
+<!-- Google Maps Places API -->
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWZnHpKVypXl70On5mXKaavnmerGooorU&libraries=places&callback=initAutocomplete"
+  async defer>
+</script>
+
+</body>
+</html>
