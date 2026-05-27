@@ -75,7 +75,11 @@ export default async function handler(req, res) {
     return res.status(200).json(data);
 
   } catch (error) {
-    console.log('Fetch error:', error.message);
-    return res.status(500).json({ error: error.message });
+    console.log('Fetch error full:', error);
+    return res.status(500).json({ 
+      error: error.message,
+      cause: error.cause?.message || 'no cause',
+      code: error.cause?.code || 'no code'
+    });
   }
 }
