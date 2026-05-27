@@ -59,10 +59,23 @@ export default async function handler(req, res) {
       body: rawBody
     });
 
-    const data = await response.json();
+    const responseText = await response.text();
+    console.log('Lalamove status:', response.status);
+    console.log('Lalamove response:', responseText);
+
+    if (!response.ok) {
+      return res.status(500).json({ 
+        error: 'Lalamove API error',
+        status: response.status,
+        details: responseText
+      });
+    }
+
+    const data = JSON.parse(responseText);
     return res.status(200).json(data);
 
   } catch (error) {
+    console.log('Fetch error:', error.message);
     return res.status(500).json({ error: error.message });
   }
 }
